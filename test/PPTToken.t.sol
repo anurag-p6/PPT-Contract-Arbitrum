@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.31;
 
 import "forge-std/Test.sol";
 import "../src/PPTToken.sol";
+import {IERC20Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 contract PPTTokenTest is Test {
     PPTToken token;
@@ -11,21 +13,36 @@ contract PPTTokenTest is Test {
         token = new PPTToken(1000);
     }
 
-    function testInitialSupply() public  view{
-        // totalSupply should be 1000 * 10^18
-        assertEq(token.totalSupply(), 1000 * 10**18);
+    function testInitialSupply() public view {
+        assertEq(token.totalSupply(), 1000 * 10 ** 18);
     }
 
-    function testBalanceOfDeployer() public view{
-        // Deployer should have initial supply balance
-        assertEq(token.balanceOf(address(this)), 1000 * 10**18);
+    function testBalanceOfDeployer() public view {
+        assertEq(token.balanceOf(address(this)), 1000 * 10 ** 18);
     }
 
     function testTransfer() public {
         address recipient = address(0x123);
-        uint256 amount = 10 * 10**18;
+        uint256 amount = 10 * 10 ** 18;
 
         token.transfer(recipient, amount);
         assertEq(token.balanceOf(recipient), amount);
+    }
+
+    function testOwnerCanMintWholeTokens() public {
+        address recipient = address(0x456);
+        token.mint(recipient, 1);
+        assertEq(token.balanceOf(recipient), 1e18);
+    }
+
+    function testNonOwnerCannotMint() public {
+        vm.prank(address(0x999));
+        vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, address(0x999)));
+        token.mint(address(0x456), 1);
+    }
+
+    function testMintToZeroAddressReverts() public {
+        vm.expectRevert(abi.encodeWithSelector(IERC20Errors.ERC20InvalidReceiver.selector, address(0)));
+        token.mint(address(0), 1);
     }
 }

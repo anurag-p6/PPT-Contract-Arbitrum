@@ -72,9 +72,10 @@ contract MedInvoiceContract is Ownable, ReentrancyGuard {
         emit NewSubscription(user, endTime);
     }
 
+    /// @param amount Number of whole PPT tokens to mint (e.g. 1 = 1 PPT, not 1 wei)
     function mintToken(uint256 amount) external {
-        require(isSubscribed(msg.sender),"User must subscribe first.");
-        pptToken.mint(msg.sender, amount);
+        require(isSubscribed(msg.sender), "User must subscribe first.");
+        pptToken.mint(msg.sender, amount * 1e18);
     }
 
     function withdrawTokens(uint256 amount) external onlyOwner {
