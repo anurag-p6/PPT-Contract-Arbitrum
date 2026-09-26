@@ -8,9 +8,11 @@ evm_version = "cancun"
 [rpc_endpoints]
 arbitrum-sepolia = "${ARBITRUM_SEPOLIA_RPC}"
 arbitrum-mainnet = "${ARBITRUM_MAINNET_RPC}"
+monad-testnet = "${MONAD_TESTNET_RPC}"
 
 [etherscan]
 arbiscan-sepolia = { key = "${ETHERSCAN_API_KEY}" }
 arbiscan-mainnet = { key = "${ETHERSCAN_API_KEY}", chain = "arbitrum" }
+monad-testnet = { key = "${ETHERSCAN_API_KEY}", chain = 10143, url = "https://api-testnet.monadscan.com/api" }
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
